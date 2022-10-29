@@ -7,8 +7,10 @@ export default function GoalItem({ goal, onDelete, onItemPress }) {
   function deletePressed() {
     onDelete(goal.key);
   }
+  console.log("goalitem")
   return (
     <View style={styles.goalTextContainer}>
+      
       <Pressable
         onPress={() => {
           onItemPress(goal);
@@ -20,7 +22,7 @@ export default function GoalItem({ goal, onDelete, onItemPress }) {
           //   return pressed && styles.pressedItem;
         }}
       >
-        <Text style={styles.goalText}> {goal.text} </Text>
+        <Text style={styles.goalText}> {goal.Text} </Text>
       </Pressable>
       <DeleteButton onDeletePressed={deletePressed} />
     </View>

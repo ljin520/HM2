@@ -1,212 +1,354 @@
-
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, TextInput, View,Button,Modal } from 'react-native';
-import { NavigationContainer,getFocusedRouteNameFromRoute } from "@react-navigation/native";
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useState } from 'react';
-import Input from './components/Input';
+import {
+  StyleSheet,
+  Pressable,
+  Text,
+  TextInput,
+  View,
+  Button,
+  Alert,
+  SafeAreaView,
+} from "react-native";
+import { firestore } from "./firebase/firebase-setup";
+import { uid } from "uid";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { useState, useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import Home  from './components/Home';
-import GoalDetails from './components/GoalDetails';
-import { StatusBar } from "expo-status-bar";
-import GoalItem from "./components/GoalItem";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import {
+  addDoc,
+  deleteDoc,
+  doc,
+  setDoc,
+  collection,
+  onSnapshot,
+} from "firebase/firestore";
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-
-// function Add({ navigation,route }) {
-//   const [goals, setGoals] = useState([]);
-//   const updateGoals = function (newinf) {
-//     const newGoal = { text: newinf.money, key: newinf.key };
-//     setGoals((prevgoals) => {
-//       return [...prevgoals, newGoal];
-//     });
-//   };
-//   console.log("add expenses")
-
-//   React.useEffect(() => {
-//     if (route.params?.post) {
-//       updateGoals(route.params.user)
-//     }
-//   }, [route.params?.post]);
-//   const dataToShow = goals.map((x) => <View><Text style={styles.textContainer}>{x}</Text></View>);
-
-//   console.log(route.params)
-//   console.log(route.params.user)
-//   console.log(route.params.user.key)
-//   console.log(route.params.user.money)
-//   console.log(dataToShow)
-//   return(
-//       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-//         <Button
-//         title="Create post"
-//         onPress={() => navigation.navigate('CreatePostScreen',)}
-//       />
-//       <Text style={{ margin: 10 }}>Post: {dataToShow} </Text>
-//       </View>
-//   );
-// }
-
 function AllExpenses({ navigation }) {
-  return (
-    <Home/>
-    // <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+  const ref = collection(firestore, "goals");
+  const [mygoals, setMyGoals] = useState([]);
 
-    // </View>
-  );
-}
+  const getgoals = () => {
+    onSnapshot(ref, (querySnapshot) => {
+      const item = [];
+      querySnapshot.docs.map((element) => {
+        item.push(element.data());
+      });
+      setMyGoals(item);
+    });
+  };
 
-function ImportantExpenses({ navigation }) {
+  useEffect(() => getgoals()), [];
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-       <Button title="Home" onPress={() => navigation.navigate('Home')} />
+    <View>
+      {mygoals.map((goal) => (
+        <Pressable
+          onPress={() => {
+            navigation.navigate("Edit Expenses");
+          }}
+          android_ripple={{ color: "black", foreground: true }}
+          style={(obj) => {
+            return obj.pressed && styles.pressedItem;
+          }}
+        >
+          <View style={styles.goalTextContainer}>
+            <Text style={styles.goalText}>{goal.text}</Text>
+            <Text style={styles.goalText}>{goal.money}</Text>
+          </View>
+        </Pressable>
+      ))}
     </View>
   );
 }
 
-function HomeTabs({ navigation }){
-  return(
-        <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                let iconName;
+function ImportantExpenses({ navigation }) {
+  const ref = collection(firestore, "goals");
+  const [mygoals, setMyGoals] = useState([]);
 
-                if (route.name === 'All Expenses') {
-                  iconName = focused ? 'logo-usd': 'play-skip-forward-outline';
-                } else if (route.name === 'Important Expenses') {
-                  iconName = focused ? 'logo-yen' : 'play-skip-back-outline';
-                }
+  const getgoals = () => {
+    onSnapshot(ref, (querySnapshot) => {
+      const item = [];
+      querySnapshot.docs.map((element) => {
+        item.push(element.data());
+      });
+      setMyGoals(item);
+    });
+  };
 
-                return <Ionicons name={iconName} size={size} color={color} />;
-              },
+  useEffect(() => getgoals()), [];
 
-              tabBarActiveTintColor: 'black',
-              tabBarInactiveTintColor: 'gray',
-              headerStyle: { backgroundColor: "#995099" },
-              headerTintColor: "#fff",
-              headerTitleAlign: "center",
-            })}
-        >
-          <Tab.Screen name="All Expenses" 
-                      component={AllExpenses}                 
-                      options={{
-                          headerRight: () => (
-                          <Button
-                              onPress={() => navigation.navigate('Home')}
-                              title="+"
-                              color="#000"
-                          />),}}
-          />
-          <Tab.Screen 
-                name="Important Expenses" 
-                component={ImportantExpenses}     
-                options={{
-                  headerRight: () => (
-                  <Button
-                      onPress={() => navigation.navigate('Home')}
-                      title= "+"
-                      color="#000"
-                  />),
-                }}
-          />
-        </Tab.Navigator>
+  return (
+    <View>
+      {mygoals.map((goal) =>
+        goal.importance == 1 ? (
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Edit Expenses");
+            }}
+            android_ripple={{ color: "black", foreground: true }}
+            style={(obj) => {
+              return obj.pressed && styles.pressedItem;
+            }}
+          >
+            <View style={styles.goalTextContainer}>
+              <Text style={styles.goalText}>{goal.text}</Text>
+
+              <Text style={styles.goalText}>{goal.money}</Text>
+            </View>
+          </Pressable>
+        ) : null
+      )}
+    </View>
   );
 }
 
+function HomeTabs({ navigation, route }) {
+  const [goals, setGoals] = useState([]);
+  // console.log(route.params)
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
 
-function CreatePostScreen({ navigation, route}) {
-  const [postText, setPostText] = React.useState('');
-  const [money,setMoney] = useState(0);
+          if (route.name === "All Expenses") {
+            iconName = focused ? "logo-usd" : "play-skip-forward-outline";
+          } else if (route.name === "Important Expenses") {
+            iconName = focused ? "logo-yen" : "play-skip-back-outline";
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+
+        tabBarActiveTintColor: "black",
+        tabBarInactiveTintColor: "gray",
+        headerStyle: { backgroundColor: "#995099" },
+        headerTintColor: "#fff",
+        headerTitleAlign: "center",
+      })}
+    >
+      <Tab.Screen
+        name="All Expenses"
+        component={AllExpenses}
+        options={{
+          headerRight: () => (
+            <Button
+              onPress={() => navigation.navigate("AddExpenses", { goals })}
+              title="+"
+              color="#000"
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Important Expenses"
+        component={ImportantExpenses}
+        options={{
+          headerRight: () => (
+            <Button
+              onPress={() => navigation.navigate("AddExpenses", { goals })}
+              title="+"
+              color="#000"
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function CreatePostScreen({ navigation, route }) {
+  const [text, setPostText] = React.useState("");
+  const [money, setMoney] = useState(0);
+  // console.log(route.params);
+
+  const wirteToDatabase = async function (text, money) {
+    try {
+      const key = uid();
+      const importance = 2;
+      addDoc(collection(firestore, "goals"), {
+        importance,
+        text,
+        key,
+        money,
+      });
+      console.log("good to do");
+    } catch (err) {
+      console.log(err);
+    }
+    navigation.navigate("All Expenses")
+  };
+  function Warning() {
+    Alert.alert(
+      'Invalid input!', 'please check your values',
+    );
+} 
+
+function sanitise(x) {
+  if (isNaN(x)) {
+    return NaN;
+  }
+  return x;
+}
 
   return (
-    <>
-      <TextInput
-        multiline
-        placeholder="What's on your mind?"
-        style={{ height: 200, padding: 10, backgroundColor: 'white' }}
-        value={postText}
-        onChangeText={setPostText}
-      />
-      <TextInput
-          multiline
-          style={styles.input}
-          value={money}
+    <SafeAreaView style={styles.container}>
+      <View styles={styles.center}>
+        <Text styles={styles.title}> Your Expenses</Text>
 
+        <TextInput
+          style={styles.textContainer}
+          title="money"
+          multiline
+          placeholder="Input Your money"
+          value={money}
           onChangeText={(money) => {
             setMoney(money);
           }}
-          style1={{ height: 200, padding: 10, backgroundColor: 'white' }}
-          placeholder="Input Your money"
         />
-      <Button 
-                      title="Cancel" 
-                      onPress={()=>navigation.navigate('All Expenses')}
-      />
 
-      <Button
-        title="Submit"
-        onPress={() => navigation.navigate('Home',{user: {
-          key: postText,
-          money: money,
-        },})}
-      />
-    </>
+        <TextInput
+          style={styles.textContainer}
+          multiline
+          placeholder="What's your money used for?"
+          value={text}
+          onChangeText={setPostText}
+        />
+
+        <Button
+          title="Cancel"
+          onPress={() => navigation.navigate("All Expenses")}
+        />
+
+        <Button
+          title="Submit"
+          onPress={() => {
+            sanitise(money) == money & parseInt(money) > 0 &  text.length > 1 ? 
+            wirteToDatabase(text, money): Warning()
+
+          }}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
+function GoalDetails({ navigation, route }) {
+  const cur = route.params;
+  const text = "";
+  const updateImportant = async function (cur) {
+    Alert.alert(
+      "Important", 
+      "Are you sure you want to mark this as inmportant?", [
+      {
+        text: "No",
+        onPress: () => {},
+      },
+      {
+        text: "YES",
+        onPress: () => {
+        setDoc(doc(firestore, "goals", `${cur.id}`), { importance: "1" }, { merge: true }),
+        navigation.navigate("Back");}
+      },
+    ]);
+  };
+
+  const delGoal = async function (cur) {
+
+    Alert.alert(
+      "Delete", 
+      "Are you sure you want to delete this?", [
+      {
+        text: "No",
+        onPress: () => {},
+      },
+      {
+        text: "YES",
+        onPress: () => {
+          try {
+            deleteDoc(doc(firestore, "goals", `${cur.id}`));
+          } catch (err) {
+            console.log(err);
+          }
+          navigation.navigate("Back");
+        },
+      },
+    ]);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View>
+        <Button
+          style={styles.bouttonContainer}
+          title="Mark as Important"
+          onPress={() => {
+            updateImportant(cur);
+            console.log(text)
+            text=="YES" ? navigation.navigate("Back"):null;
+          }}
+        />
+
+        <Button
+          style={styles.bouttonContainer}
+          title="Delete"
+          onPress={() => {
+            delGoal(cur);
+          }}
+        />
+      </View>
+    </SafeAreaView>
+  );
+}
 
 function getHeaderTitle(route) {
-  const routeName = getFocusedRouteNameFromRoute(route) ?? 'Feed';
-
+  const routeName = getFocusedRouteNameFromRoute(route) ?? "Feed";
   switch (routeName) {
-    case 'Important Expense':
-      return 'Important Expense';
-    case 'All Expenses':
-      return 'All Expenses';
+    case "Important Expense":
+      return "Important Expense";
+    case "All Expenses":
+      return "All Expenses";
   }
 }
 
 export default function App() {
-
   return (
     <NavigationContainer>
-      <Stack.Navigator >
-
-        <Stack.Screen 
-            name="Back" 
-            component={HomeTabs} 
-            options={({ route } ) => ({
-                    headerTitle: getHeaderTitle(route),
-                    headerShown: false,
-                    headerRight: () => (
-                      <Button
-                          onPress={() => navigation.navigate('AddExpenses')}
-                          title= "+"
-                          color="#000"
-                      />),
-            })}
-      />
-        {/* <Stack.Screen name="CreatePostScreen" component={CreatePostScreen} options={{ headerShown: false }}/> */}
+      <Stack.Navigator>
         <Stack.Screen
-                  name="Home"
-                  component={Home}
-                  options={{
-                    title: "All Goals",
-                  }}
+          name="Back"
+          component={HomeTabs}
+          options={({ route }) => ({
+            headerTitle: getHeaderTitle(route),
+            headerShown: false,
+          })}
         />
-        <Stack.Screen name = "AddExpenses" component={Input}/>
 
         <Stack.Screen
-          name="GoalDetails"
+          name="AddExpenses"
+          component={CreatePostScreen}
+          options={{
+            headerStyle: { backgroundColor: "#995099" },
+            headerTintColor: "#fff",
+            headerTitleAlign: "center",
+          }}
+        />
+
+        <Stack.Screen
+          name="Edit Expenses"
           component={GoalDetails}
-          options={({ route, navigation }) => {
-            console.log(route)
-            return {
-              title: route.params,
-              headerRight: rightButton,
-            };
+          options={{
+            headerStyle: { backgroundColor: "#995099" },
+            headerTintColor: "#fff",
+            headerTitleAlign: "center",
           }}
         />
       </Stack.Navigator>
@@ -217,15 +359,47 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: "center",
+    marginHorizontal: 16,
   },
-  textContainer:{
+
+  title: {
+    justifyContent: "center",
+    color: "blue",
+  },
+
+  center: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  goalTextContainer: {
+    margin: 15,
+    borderRadius: 8,
+    backgroundColor: "#aaa",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+
+  bouttonContainer: {
+    margin: 5,
+    width: "30%",
+    flexDirection: "row",
+  },
+
+  textContainer: {
     backgroundColor: "#aaa",
     borderRadius: 5,
     color: "blue",
     padding: 30,
     margin: 30,
-  }
+  },
+
+  pressedItem: {
+    backgroundColor: "#222",
+    opacity: 1,
+  },
 });

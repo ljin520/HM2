@@ -1,13 +1,16 @@
-import { View, Text, Modal} from 'react-native'
+import { View, Text, Modal, Button} from 'react-native'
 import React from 'react'
 
 export default function GoalDetails({route}) {
-  console.log(route.params.goalObject.text)
+  console.log("item pressed");
+  console.log(route.params);
   return (
-    // <Modal visible={modal1}>
+
     <View>
-      <Text>You are viewing details of {route.params.goalObject.text} goal</Text>
+      <Text>You are viewing details of goal</Text>
+      <Button title='Mark as Important' onPress={()=>{}}/>
+      <Button title='Delete' onPress={()=>{}}/>
     </View>
-    // </Modal>
+
   )
 }
