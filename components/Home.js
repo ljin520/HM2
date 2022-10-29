@@ -13,7 +13,7 @@ import GoalItem from "./GoalItem";
 import GoalDetails from "./GoalDetails";
 // import { writeToDB} from '../firebase/firestore';
 // import { firestore } from '../firebase/firebase-setup';
-import { collection, onSnapshot } from 'firebase/firestore';
+// import { collection, onSnapshot } from 'firebase/firestore';
 
 
 
@@ -82,6 +82,12 @@ export default function Home({navigation}) {
     <SafeAreaView style={styles.container}>
       <View style={styles.buttonContainer}>
         <Button title="+" onPress={makeModalVisible} />
+        {/* <Button title="+" onPress={() => 
+            navigation.navigate('Home',
+                {modalVisible},
+                {makeModalVisible},
+                {onTextAdd})} 
+        /> */}
       </View>
 
       <View style={styles.bottomContainer}>
@@ -95,6 +101,7 @@ export default function Home({navigation}) {
                 onDelete={onDelete}
                 onItemPress={itemPressed}
               />
+
             );
           }}
           contentContainerStyle={styles.scrollViewItems}
@@ -117,6 +124,18 @@ export default function Home({navigation}) {
 
 
 const styles = StyleSheet.create({
+  center:{
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  title:{
+    frontSize:36,
+    marginBottom:16
+  },
+
   container: {
     flex: 1,
     backgroundColor: "#fff",

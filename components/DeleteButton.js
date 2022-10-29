@@ -6,7 +6,6 @@ export default function DeleteButton({ onDeletePressed }) {
     <Pressable
       onPress={onDeletePressed}
       style={({ pressed }) => {
-        console.log(123456789)
         return pressed && styles.pressedItm;
       }}
       android_ripple={{ color: "#223355", foreground: true }}
