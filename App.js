@@ -7,6 +7,7 @@ import {
   Button,
   Alert,
   SafeAreaView,
+  FlatList,
 } from "react-native";
 import { firestore } from "./firebase/firebase-setup";
 import { uid } from "uid";
@@ -22,7 +23,10 @@ import {
   setDoc,
   collection,
   onSnapshot,
+  updateDoc,
 } from "firebase/firestore";
+
+
 import {
   NavigationContainer,
   getFocusedRouteNameFromRoute,
@@ -35,83 +39,141 @@ function AllExpenses({ navigation }) {
   const ref = collection(firestore, "goals");
   const [mygoals, setMyGoals] = useState([]);
 
-  const getgoals = () => {
-    onSnapshot(ref, (querySnapshot) => {
-      const item = [];
-      querySnapshot.docs.map((element) => {
-        item.push(element.data());
-      });
-      setMyGoals(item);
-    });
-  };
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(firestore, "goals"),
+      (querySnapshot) => {
+        if (querySnapshot.empty) {
+          setMyGoals([]);
+          return;
+        }
+        setMyGoals(
+          querySnapshot.docs.map((snapDoc) => {
+            let data = snapDoc.data();
+            data = { ...data, id: snapDoc.id };
+            return data;
+          })
+        );
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+  // const getgoals = () => {
+  //   onSnapshot(ref, (querySnapshot) => {
+  //     const item = [];
+  //     querySnapshot.docs.map((element) => {
+  //       item.push(element.data());
+  //     });
+  //     setMyGoals(item);
+  //   });
+  // };
 
-  useEffect(() => getgoals()), [];
+  // useEffect(() => getgoals()), [];
 
   return (
     <View>
-      {mygoals.map((goal) => (
-        <Pressable
-          onPress={() => {
-            navigation.navigate("Edit Expenses");
+       <FlatList
+          data={mygoals}
+          renderItem={({ item }) => {
+            // console.log(item)
+            return (
+               <Pressable
+                  onPress={() => {
+                    navigation.navigate("Edit Expenses",{item});
+                  }}
+                  android_ripple={{ color: "black", foreground: true }}
+                  style={(obj) => {
+                    return obj.pressed && styles.pressedItem;
+                  }}
+                >
+                  <View style={styles.goalTextContainer}>
+                    <Text style={styles.goalText}>{item.text}</Text>
+      
+                    <Text style={styles.goalText}>{item.money}</Text>
+                  </View>
+                </Pressable>
+            );
           }}
-          android_ripple={{ color: "black", foreground: true }}
-          style={(obj) => {
-            return obj.pressed && styles.pressedItem;
-          }}
-        >
-          <View style={styles.goalTextContainer}>
-            <Text style={styles.goalText}>{goal.text}</Text>
-            <Text style={styles.goalText}>{goal.money}</Text>
-          </View>
-        </Pressable>
-      ))}
+        ></FlatList>
     </View>
   );
 }
 
-function ImportantExpenses({ navigation }) {
+function ImportantExpenses({ navigation,route }) {
   const ref = collection(firestore, "goals");
   const [mygoals, setMyGoals] = useState([]);
 
-  const getgoals = () => {
-    onSnapshot(ref, (querySnapshot) => {
-      const item = [];
-      querySnapshot.docs.map((element) => {
-        item.push(element.data());
-      });
-      setMyGoals(item);
-    });
-  };
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(firestore, "goals"),
+      (querySnapshot) => {
+        if (querySnapshot.empty) {
+          setMyGoals([]);
+          return;
+        }
+        setMyGoals(
+          querySnapshot.docs.map((snapDoc) => {
+            let data = snapDoc.data();
+            data = { ...data, id: snapDoc.id };
+            // console.log("^^^^^^")
+            // console.log(data,snapDoc.id)
+            return data;
+          })
+        );
+      }
+    );
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
-  useEffect(() => getgoals()), [];
+  // const getgoals = () => {
+  //   onSnapshot(ref, (querySnapshot) => {
+  //     const item = [];
+  //     querySnapshot.docs.map((element) => {
+  //       item.push(element.data());
+  //     });
+  //     setMyGoals(item);
+  //   });
+  // };
 
+  // useEffect(() => getgoals()), [];
+  
   return (
     <View>
-      {mygoals.map((goal) =>
-        goal.importance == 1 ? (
-          <Pressable
-            onPress={() => {
-              navigation.navigate("Edit Expenses");
-            }}
-            android_ripple={{ color: "black", foreground: true }}
-            style={(obj) => {
-              return obj.pressed && styles.pressedItem;
-            }}
-          >
-            <View style={styles.goalTextContainer}>
-              <Text style={styles.goalText}>{goal.text}</Text>
+        <FlatList
+          data={mygoals}
+          renderItem={({ item }) => {
+            // console.log(item)
+            return (
+               (item.importance == 1?
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate("Edit Expenses",{item});
+                  }}
+                  android_ripple={{ color: "black", foreground: true }}
+                  style={(obj) => {
+                    return obj.pressed && styles.pressedItem;
+                  }}
+                >
+                  <View style={styles.goalTextContainer}>
+                    <Text style={styles.goalText}>{item.text}</Text>
+      
+                    <Text style={styles.goalText}>{item.money}</Text>
+                  </View>
+                </Pressable>:null)
+              
+            );
+          }}
+        ></FlatList>
 
-              <Text style={styles.goalText}>{goal.money}</Text>
-            </View>
-          </Pressable>
-        ) : null
-      )}
     </View>
   );
 }
 
 function HomeTabs({ navigation, route }) {
-  const [goals, setGoals] = useState([]);
   // console.log(route.params)
   return (
     <Tab.Navigator
@@ -141,7 +203,8 @@ function HomeTabs({ navigation, route }) {
         options={{
           headerRight: () => (
             <Button
-              onPress={() => navigation.navigate("AddExpenses", { goals })}
+              onPress={() => 
+                { navigation.navigate("AddExpenses", { importance: 2})}}
               title="+"
               color="#000"
             />
@@ -154,7 +217,8 @@ function HomeTabs({ navigation, route }) {
         options={{
           headerRight: () => (
             <Button
-              onPress={() => navigation.navigate("AddExpenses", { goals })}
+              onPress={() => 
+                {navigation.navigate("AddExpenses", { importance:1 })}}
               title="+"
               color="#000"
             />
@@ -168,17 +232,19 @@ function HomeTabs({ navigation, route }) {
 function CreatePostScreen({ navigation, route }) {
   const [text, setPostText] = React.useState("");
   const [money, setMoney] = useState(0);
-  // console.log(route.params);
+  const importance = route.params.importance;
 
   const wirteToDatabase = async function (text, money) {
     try {
-      const key = uid();
-      const importance = 2;
-      addDoc(collection(firestore, "goals"), {
+      const id = uid();
+      const key = Math.random();
+
+      await addDoc(collection(firestore, "goals"), {
         importance,
         text,
         key,
         money,
+        id,
       });
       console.log("good to do");
     } catch (err) {
@@ -241,10 +307,10 @@ function sanitise(x) {
   );
 }
 
-function GoalDetails({ navigation, route }) {
-  const cur = route.params;
-  const text = "";
-  const updateImportant = async function (cur) {
+function GoalDetails({ navigation,route }) {
+  const cur = route.params.item;
+  console.log(cur.id)
+  const updateImportant = async function () {
     Alert.alert(
       "Important", 
       "Are you sure you want to mark this as inmportant?", [
@@ -254,15 +320,15 @@ function GoalDetails({ navigation, route }) {
       },
       {
         text: "YES",
-        onPress: () => {
-        setDoc(doc(firestore, "goals", `${cur.id}`), { importance: "1" }, { merge: true }),
-        navigation.navigate("Back");}
+        onPress: () => { 
+          navigation.navigate("Back");
+          updateDoc(doc(firestore, "goals", `${cur.id}`), { importance: 1}, { merge: true });
+          console.log("edit ")}
       },
-    ]);
+    ])
   };
 
-  const delGoal = async function (cur) {
-
+  const delGoal = async function () {
     Alert.alert(
       "Delete", 
       "Are you sure you want to delete this?", [
@@ -273,11 +339,10 @@ function GoalDetails({ navigation, route }) {
       {
         text: "YES",
         onPress: () => {
-          try {
+          
             deleteDoc(doc(firestore, "goals", `${cur.id}`));
-          } catch (err) {
-            console.log(err);
-          }
+            // remove(doc(firestore, "goals", `${cur.key}`));
+            console.log("delte")
           navigation.navigate("Back");
         },
       },
@@ -291,9 +356,7 @@ function GoalDetails({ navigation, route }) {
           style={styles.bouttonContainer}
           title="Mark as Important"
           onPress={() => {
-            updateImportant(cur);
-            console.log(text)
-            text=="YES" ? navigation.navigate("Back"):null;
+            updateImportant({cur});
           }}
         />
 
@@ -301,7 +364,7 @@ function GoalDetails({ navigation, route }) {
           style={styles.bouttonContainer}
           title="Delete"
           onPress={() => {
-            delGoal(cur);
+            delGoal({cur});
           }}
         />
       </View>
