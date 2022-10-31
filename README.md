@@ -5,22 +5,24 @@
 ## User can add, edit, delete expenses which is updated to database
 
 - Screens:
-- 
+
 There are 4 screens (These are still components that render other components) in this app which user can navigate to them using a nested navigation
 
 
 - All Expenses
 - Important Expenses
-[^1]: The first two screens are shown in a bottom tab navigator and both show a list of expense items. 
-[^2]: To implement the list of expense items, use a scrollable component that has a better performance for showing a list of dynamic data. 
-[^3]: Create a component (e.g. ExpenseList) and reuse this in All Expenses and Important Expenses screen. 
-[^4]: Pass a prop to communicate what expenses (all or important expenses) to query from firebase.
+
+The first two screens are shown in a bottom tab navigator and both show a list of expense items. 
+To implement the list of expense items, use a scrollable component that has a better performance for showing a list of dynamic data. 
+Create a component (e.g. ExpenseList) and reuse this in All Expenses and Important Expenses screen. 
+Pass a prop to communicate what expenses (all or important expenses) to query from firebase.
 
 ![0d0a527c235cffdeaedf207386f63f2](https://user-images.githubusercontent.com/78027883/198927089-d8fdba02-067d-4bef-94a0-de6384767e1d.png)
 ![947e74a39c6347eb08d8c7b9ce33093](https://user-images.githubusercontent.com/78027883/198927105-330adbf8-27fa-485b-8e0c-99a0a5d5a808.png)
 
 
 - Edit Expense
+
  Tapping each expense item in the list (on both all and important expenses screens) navigate to Edit Expense screen. This screens show two buttons to the user, 
  to delete an expense item, or mark it as important. An alert should be shown to the user to confirm the action. These actions update Firestore database accordingly.
  
@@ -28,6 +30,7 @@ There are 4 screens (These are still components that render other components) in
 ![4e439c5708012aa9b29686e948ff9a8](https://user-images.githubusercontent.com/78027883/198927210-9ec90bc4-33d9-4040-87f0-bd4b4c215793.png)
 
 - Add Expense
+
 From both All Expenses and Important Expenses screens, you can navigate to Add Expenses screen by pressing on a header button. Add Expense screen shows a form to the user to add an expense item with amount and description values. You should validate user's entry (e.g. no negative number, or letters for amount, no empty submission,...). This action adds a new item to Firestore database, 
 and assigns it a unique id. You need to get this id when reading the data and save it in your expenses data so you could identify expense items.
 
