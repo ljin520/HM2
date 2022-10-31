@@ -5,13 +5,16 @@
 ## User can add, edit, delete expenses which is updated to database
 
 - Screens:
+- 
 There are 4 screens (These are still components that render other components) in this app which user can navigate to them using a nested navigation
 
 
 - All Expenses
 - Important Expenses
-The first two screens are shown in a bottom tab navigator and both show a list of expense items. To implement the list of expense items, use a scrollable component that has a better performance for showing a list of dynamic data. Create a component (e.g. ExpenseList) and 
-reuse this in All Expenses and Important Expenses screen. You should pass a prop to communicate what expenses (all or important expenses) to query from firebase.
+[^1]: The first two screens are shown in a bottom tab navigator and both show a list of expense items. 
+[^2]: To implement the list of expense items, use a scrollable component that has a better performance for showing a list of dynamic data. 
+[^3]: Create a component (e.g. ExpenseList) and reuse this in All Expenses and Important Expenses screen. 
+[^4]: Pass a prop to communicate what expenses (all or important expenses) to query from firebase.
 
 ![0d0a527c235cffdeaedf207386f63f2](https://user-images.githubusercontent.com/78027883/198927089-d8fdba02-067d-4bef-94a0-de6384767e1d.png)
 ![947e74a39c6347eb08d8c7b9ce33093](https://user-images.githubusercontent.com/78027883/198927105-330adbf8-27fa-485b-8e0c-99a0a5d5a808.png)
