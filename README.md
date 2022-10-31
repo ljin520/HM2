@@ -17,7 +17,7 @@ To implement the list of expense items, use a scrollable component that has a be
 Create a component (e.g. ExpenseList) and reuse this in All Expenses and Important Expenses screen. 
 Pass a prop to communicate what expenses (all or important expenses) to query from firebase.
 
-![0d0a527c235cffdeaedf207386f63f2](https://user-images.githubusercontent.com/78027883/198927089-d8fdba02-067d-4bef-94a0-de6384767e1d.png)
+<img scr = "https://user-images.githubusercontent.com/78027883/198927089-d8fdba02-067d-4bef-94a0-de6384767e1d.png", width = "300px">
 ![947e74a39c6347eb08d8c7b9ce33093](https://user-images.githubusercontent.com/78027883/198927105-330adbf8-27fa-485b-8e0c-99a0a5d5a808.png)
 
 
