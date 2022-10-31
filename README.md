@@ -17,7 +17,10 @@ To implement the list of expense items, use a scrollable component that has a be
 Create a component (e.g. ExpenseList) and reuse this in All Expenses and Important Expenses screen. 
 Pass a prop to communicate what expenses (all or important expenses) to query from firebase.
 
-<img scr = "https://user-images.githubusercontent.com/78027883/198927089-d8fdba02-067d-4bef-94a0-de6384767e1d.png", width = "300">
+
+![0d0a527c235cffdeaedf207386f63f2](https://user-images.githubusercontent.com/78027883/198929780-c3602898-bcdd-4ef0-a013-5559da4b7af4.png)
+
+
 ![947e74a39c6347eb08d8c7b9ce33093](https://user-images.githubusercontent.com/78027883/198927105-330adbf8-27fa-485b-8e0c-99a0a5d5a808.png)
 
 
@@ -26,7 +29,8 @@ Pass a prop to communicate what expenses (all or important expenses) to query fr
  Tapping each expense item in the list (on both all and important expenses screens) navigate to Edit Expense screen. This screens show two buttons to the user, 
  to delete an expense item, or mark it as important. An alert should be shown to the user to confirm the action. These actions update Firestore database accordingly.
  
-<img src = "https://user-images.githubusercontent.com/78027883/198927190-6f5ea294-e3c4-4ae3-83b6-24a660f36627.png",width = "375",alt = "All Expenses")
+![2d518916747fcdf6c3e2fb2a2453353](https://user-images.githubusercontent.com/78027883/198929862-ca9b8348-6fa8-4cb9-9fa8-711d4b8f52de.png)
+    
 ![4e439c5708012aa9b29686e948ff9a8](https://user-images.githubusercontent.com/78027883/198927210-9ec90bc4-33d9-4040-87f0-bd4b4c215793.png)
 
 - Add Expense
