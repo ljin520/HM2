@@ -10,7 +10,6 @@ export async function writeToDB(goal) {
   }
 }
 
-
 export async function deleteFromDB(key) {
   console.log("dele firestore");
   try {
