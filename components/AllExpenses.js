@@ -54,6 +54,7 @@ export default function AllExpenses({ navigation }) {
           );
         }}
       ></FlatList>
+
     </View>
   );
 }

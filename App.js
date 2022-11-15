@@ -1,4 +1,4 @@
-import { Button } from "react-native";
+import  { Button } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
@@ -11,6 +11,7 @@ import AllExpenses from "./components/AllExpenses";
 import ImportantExpenses from "./components/ImportantExpenses";
 import CreatePostScreen from "./components/CreatePostScreen";
 import GoalDetails from "./components/GoalDetails";
+import React, { BackHandler } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -92,7 +93,17 @@ export default function App() {
           options={({ route }) => ({
             headerTitle: getHeaderTitle(route),
             headerShown: false,
-          })}
+            headerRight: () => (
+              <Button
+                onPress={() => {
+                  BackHandler.exitApp();
+                }}
+                title="Exit"
+                color="#000"
+              />
+            ),
+          })
+        }
         />
 
         <Stack.Screen
