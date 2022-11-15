@@ -79,6 +79,7 @@ export default function CreatePostScreen({ navigation, route }) {
           onPress={() => {
             (sanitise(money) == money) &
             (parseInt(money) > 0) &
+            (isNaN(money) == false) &
             (text.length > 1)
               ? wirteToDatabase(text, money)
               : Warning();
